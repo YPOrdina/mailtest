@@ -1,0 +1,2 @@
+serviceClass: gwtblaat.client.GreetingService
+path: 123EB0956901E0AFB2E70A29308635D2.gwt.rpc
