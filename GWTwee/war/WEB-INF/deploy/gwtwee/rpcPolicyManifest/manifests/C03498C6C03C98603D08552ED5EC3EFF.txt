@@ -1,0 +1,2 @@
+serviceClass: gwtblaat.client.MailService
+path: C2D89901FB888DB74C29942AAD59E562.gwt.rpc

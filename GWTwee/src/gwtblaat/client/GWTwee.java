@@ -1,6 +1,7 @@
 package gwtblaat.client;
 
 import gwtblaat.shared.FieldVerifier;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -14,6 +15,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -24,22 +26,28 @@ public class GWTwee implements EntryPoint {
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
-	 */
+	 */ 
 	private static final String SERVER_ERROR = "An error occurred while " + "attempting to contact the server. Please check your network "
 			+ "connection and try again.";
 
 	/**
-	 * Create a remote service proxy to talk to the server-side Greeting service.
+	 * Create a remote service proxy to talk to the server-side mail service.
 	 */
-	private final GreetingServiceAsync greetingService = GWT.create(GreetingService.class);
+	private final MailServiceAsync mailService = GWT.create(MailService.class);
 
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
 		final Button sendButton = new Button("Send");
-		final TextBox nameField = new TextBox();
-		nameField.setText("GWT User");
+		final TextBox senderField = new TextBox();
+		final TextBox toField = new TextBox();	
+		final TextArea messageField = new TextArea();
+		messageField.setText("Ik ben zo cool ik geloof het zelf niet!");
+		messageField.setWidth("338px");
+		messageField.setHeight("116px");
+		senderField.setText("jecoolemailadres@bla.nl");
+		toField.setText("jegrootstefan@bluh.nl");
 		final Label errorLabel = new Label();
 
 		// We can add style names to widgets
@@ -47,13 +55,15 @@ public class GWTwee implements EntryPoint {
 
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
-		RootPanel.get("nameFieldContainer").add(nameField);
+		RootPanel.get("messageFieldContainer").add(messageField);
+		RootPanel.get("nameFieldContainer").add(senderField);
+		RootPanel.get("nameFieldContainer").add(toField);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 
 		// Focus the cursor on the name field when the app loads
-		nameField.setFocus(true);
-		nameField.selectAll();
+		senderField.setFocus(true);
+		senderField.selectAll();
 
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
@@ -66,7 +76,7 @@ public class GWTwee implements EntryPoint {
 		final HTML serverResponseLabel = new HTML();
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<b>Sending name to the server:</b>"));
+		dialogVPanel.add(new HTML("<b>Sending shit to the server:</b>"));
 		dialogVPanel.add(textToServerLabel);
 		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
 		dialogVPanel.add(serverResponseLabel);
@@ -107,17 +117,19 @@ public class GWTwee implements EntryPoint {
 			private void sendNameToServer() {
 				// First, we validate the input.
 				errorLabel.setText("");
-				String textToServer = nameField.getText();
-				if (!FieldVerifier.isValidName(textToServer)) {
+				String senderToServer = senderField.getText();
+				String toToServer = toField.getText();
+				String messageToServer = messageField.getText();
+				if (!FieldVerifier.isValidName(senderToServer)) { //voor de hobbyist
 					errorLabel.setText("Please enter at least four characters");
 					return;
 				}
 
 				// Then, we send the input to the server.
 				sendButton.setEnabled(false);
-				textToServerLabel.setText(textToServer);
+				textToServerLabel.setText(senderToServer);
 				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer, new AsyncCallback<String>() {
+				mailService.mailServer(messageToServer, senderToServer, toToServer , new AsyncCallback<String>() {
 					public void onFailure(Throwable caught) {
 						// Show the RPC error message to the user
 						dialogBox.setText("Remote Procedure Call - Failure");
@@ -141,6 +153,6 @@ public class GWTwee implements EntryPoint {
 		// Add a handler to send the name to the server
 		MyHandler handler = new MyHandler();
 		sendButton.addClickHandler(handler);
-		nameField.addKeyUpHandler(handler);
+		senderField.addKeyUpHandler(handler);
 	}
 }
